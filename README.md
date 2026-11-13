@@ -55,8 +55,8 @@ Resume latency cost: ~2 seconds.
 ## Install
 
 ```bash
-git clone https://github.com/karthikreddy-satlabs/keyboard-resume-fix.git
-cd keyboard-resume-fix
+git clone https://github.com/karthikreddy-satlabs/keyboard-suspend-fix.git
+cd keyboard-suspend-fix
 ./install.sh
 ```
 
