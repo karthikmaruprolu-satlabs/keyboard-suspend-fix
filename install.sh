@@ -1,6 +1,10 @@
 #!/bin/sh
-# Install the keyboard resume hook into /etc/systemd/system-sleep/.
-# Also removes a legacy copy from /usr/lib/systemd/system-sleep/ if present.
+# Install the keyboard resume hook into /usr/lib/systemd/system-sleep/.
+#
+# NOTE: systemd >= 262 executes sleep hooks ONLY from /usr/lib/systemd/system-sleep/
+# (support for /etc/systemd/system-sleep/ was dropped). Installing to /etc there is a
+# silent no-op — the hook never runs. This script installs to the correct location and
+# removes any stale /etc copy from older versions of this fix.
 #
 # Usage: ./install.sh
 # Requires sudo for the privileged steps only — run as a regular user.
@@ -12,15 +16,15 @@ if [ "$(id -u)" -eq 0 ]; then
 fi
 
 SRC="$(cd "$(dirname "$0")" && pwd)/keyboard-fix.sh"
-DEST=/etc/systemd/system-sleep/keyboard-fix.sh
-LEGACY=/usr/lib/systemd/system-sleep/keyboard-fix.sh
+DEST=/usr/lib/systemd/system-sleep/keyboard-fix.sh
+STALE_ETC=/etc/systemd/system-sleep/keyboard-fix.sh
 
-sudo mkdir -p /etc/systemd/system-sleep
+sudo mkdir -p /usr/lib/systemd/system-sleep
 sudo install -m755 "$SRC" "$DEST"
 
-if sudo test -f "$LEGACY"; then
-    sudo rm "$LEGACY"
-    echo "Removed legacy hook: $LEGACY"
+if sudo test -f "$STALE_ETC"; then
+    sudo rm "$STALE_ETC"
+    echo "Removed stale hook: $STALE_ETC (systemd >= 262 ignores /etc/systemd/system-sleep)"
 fi
 
 echo "Installed: $DEST"

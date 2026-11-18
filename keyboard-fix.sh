@@ -3,8 +3,9 @@
 # Workaround for "atkbd serio0: Failed to deactivate keyboard on isa0060/serio0"
 # (built-in keyboard dead after suspend until reboot; USB keyboards unaffected).
 #
-# Install (see install.sh / uninstall.sh in this repo):
-#   sudo install -m755 keyboard-fix.sh /etc/systemd/system-sleep/keyboard-fix.sh
+# Install (systemd ≥ 262 runs sleep hooks from /usr/lib only — /etc/systemd/system-sleep
+# is no longer consulted):
+#   sudo install -m755 keyboard-fix.sh /usr/lib/systemd/system-sleep/keyboard-fix.sh
 #
 # Behavior:
 #   pre  : keep runtime PM from auto-suspending the i8042 serio device, so the

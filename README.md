@@ -24,7 +24,7 @@ power state so the failure is *prevented*, not just repaired.
 
 ## How it works
 
-Installed to `/etc/systemd/system-sleep/keyboard-fix.sh`, systemd runs it as
+Installed to `/usr/lib/systemd/system-sleep/keyboard-fix.sh`, systemd runs it as
 root around every suspend/hibernate:
 
 - **`pre` (before suspend):** sets
@@ -60,8 +60,12 @@ cd keyboard-suspend-fix
 ./install.sh
 ```
 
-The installer asks for sudo only for the privileged steps; it also removes a
-legacy copy from `/usr/lib/systemd/system-sleep/` if one exists.
+The installer asks for sudo only for the privileged steps.
+
+> **systemd ≥ 262 note:** recent systemd executes sleep hooks **only** from
+> `/usr/lib/systemd/system-sleep/` — the old `/etc/systemd/system-sleep/`
+> location is silently ignored. The installer targets `/usr/lib` and removes a
+> stale `/etc/systemd/system-sleep/keyboard-fix.sh` copy if one exists.
 
 ## Verify
 
@@ -90,8 +94,10 @@ No reboot needed — the hook only runs around suspend/resume.
 - **`ERROR: <serio> re-probe failed` in the journal** — the controller is in a
   worse state than a re-probe can fix. Try a BIOS/UEFI update, and consider
   adding `atkbd.reset=1` to the kernel command line as a stronger variant.
-- **Hook seems to never run** — confirm it's executable
-  (`ls -l /etc/systemd/system-sleep/`) and watch it fire with
+- **Hook seems to never run** — confirm it's in the directory systemd actually
+  reads: `ls -l /usr/lib/systemd/system-sleep/`. Since systemd 262,
+  `/etc/systemd/system-sleep/` is ignored entirely (this was the cause of the
+  hook "mysteriously" stopping). Watch it fire with
   `journalctl -u systemd-suspend -f` while suspending.
 - **Keyboard dies even with the hook** — check whether the failure mode is the
   first suspend after boot (older versions of this fix only protected

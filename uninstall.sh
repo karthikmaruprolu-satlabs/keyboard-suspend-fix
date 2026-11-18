@@ -3,7 +3,7 @@
 # Usage: ./uninstall.sh
 set -eu
 
-DEST=/etc/systemd/system-sleep/keyboard-fix.sh
+DEST=/usr/lib/systemd/system-sleep/keyboard-fix.sh
 
 if [ ! -f "$DEST" ]; then
     echo "Nothing to remove: $DEST is not installed."
